@@ -1,33 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-//taken from https://stackoverflow.com/questions/50284841/how-to-extract-token-string-from-bearer-token
-function extractToken(req) {
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.split(" ")[0] === "Bearer"
-  ) {
-    return req.headers.authorization.split(" ")[1];
-  } else if (req.query && req.query.token) {
-    return req.query.token;
-  }
-  return null;
-}
 
-const fetcher = async ({ userId, password }) => {
-  return async () => {
-    const apiResponse = await fetch("https://localhost/authenticate", {
-      method: "GET",
-      headers: {
-        Authorization: "Basic " + window.btoa(userId + ":" + password),
-      },
-    });
-    // const token = extractToken(apiResponse);
-
-    // console.log("TOKEN :", token);
-    const user = await apiResponse.json();
-    console.log(user);
-    return user;
-  };
-};
 export const login = createAsyncThunk(
   "/login",
   async ({ userId, password }) => {
@@ -36,8 +8,16 @@ export const login = createAsyncThunk(
       headers: {
         Authorization: "Basic " + window.btoa(userId + ":" + password),
       },
-    }).then((data) => data.json());
-    return apiResponse;
+    });
+
+    const { headers } = apiResponse;
+    const token = headers.get("Authorization").split(" ")[1];
+    const result = await apiResponse.json();
+
+    return {
+        ...result,
+        token
+    };
   }
 );
 
@@ -47,6 +27,7 @@ const initialState = {
   userName: undefined,
   loading: false,
   isLoggedIn: false,
+  token: undefined,
 };
 
 export const authSlice = createSlice({
@@ -59,6 +40,7 @@ export const authSlice = createSlice({
       state.userName = undefined;
       state.id = undefined;
       state.loading = false;
+      state.token = undefined;
     },
   },
   extraReducers: {
@@ -72,6 +54,7 @@ export const authSlice = createSlice({
       state.userName = action.payload.userName;
       state.id = action.payload.id;
       state.isLoggedIn = true;
+      state.token = action.payload.token;
     },
 
     [login.rejected]: (state, action) => {

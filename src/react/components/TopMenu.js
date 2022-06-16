@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, Container, Nav, Navbar } from "react-bootstrap";
+import { Button, Container, Navbar } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../slices/auth";
 import LoginDialog from "./LoginDialog";
@@ -14,7 +14,14 @@ export default function TopMenu() {
       <Container>
         <Navbar.Brand href="#home">Web II</Navbar.Brand>
         <Navbar.Toggle />
-        {isLoggedIn && <Navbar.Text>logged in as: {userName}</Navbar.Text>}
+
+        {isLoggedIn && (
+          <>
+            <Navbar.Text>
+              <strong>logged in as:</strong> {userName}
+            </Navbar.Text>
+          </>
+        )}
         <Navbar.Collapse className="justify-content-end">
           <Navbar.Text>
             {!isLoggedIn && (

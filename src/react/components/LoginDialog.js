@@ -1,4 +1,4 @@
-import {  useState } from "react";
+import { useState } from "react";
 import { Button, Form, Modal, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { login } from "../../slices/auth";
@@ -16,7 +16,7 @@ export default function LoginDialog({ show, closeDialog }) {
   };
 
   // * Redux State
-  const { loading, id } = useSelector((state) => state.auth);
+  const { loading } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   const onSubmit = () => {
